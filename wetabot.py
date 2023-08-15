@@ -47,6 +47,7 @@ def get_dishes(div_id) -> list:
                 "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a/div[2]/div[1]")
             utils.open_link_in_new_tab(
                 "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a")
+            food_url = drv.current_url
             food_price = float(utils.get_text(
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[2]/div[2]/div[1]")[:-1].replace(",", "."))
             food_description = utils.get_text(
@@ -76,7 +77,7 @@ def get_dishes(div_id) -> list:
 
             time_now = int(time.time())
 
-            current_food = Dish(food_name, food_description, food_price, food_image,
+            current_food = Dish(food_name, food_description, food_price, food_url, food_image,
                                 nutrients_dict, food_ingredients, food_allergens, False, False, False, time_now)
             current_food.calculate_nutriscore()
             current_food.print()
@@ -101,6 +102,7 @@ utils.click("//*[@id='__next']/div/div/div/div[2]/div[3]/div[2]/button")
 drv.get(wetaca_menu_url)
 # Get menu date
 utils.get_text("//*[@id='__next']/div/div/div/div[2]/div/div/div[2]/p")
+utils.get_text("//*[@id='comidas']/div/div[1]/div/a/div[2]/div[1]") # Wait for first dish to load
 
 # Get dishes
 dish_list = []

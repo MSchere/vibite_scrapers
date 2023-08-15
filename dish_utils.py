@@ -23,6 +23,7 @@ class Dish:
     name = ""
     description = ""
     price = 0
+    dish_url = ""
     image_url = ""
     nutrients = {}
     ingredients = ""
@@ -69,11 +70,12 @@ class Dish:
         [19, 40, "E"]
     ]
 
-    def __init__(self, name, description, price, image_url, nutrients,
+    def __init__(self, name, description, price, dish_url, image_url, nutrients,
                  ingredients, allergens, is_vegan, is_gluten_free, is_lactose_free, updated_at):
         self.name = name
         self.description = description
         self.price = price
+        self.dish_url = dish_url
         self.image_url = image_url
         self.nutrients = nutrients
         self.ingredients = ingredients
@@ -116,7 +118,7 @@ class Dish:
                 break
 
     def __str__(self):
-        return f"{self.name} - {self.price} € - {self.image_url} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts."
+        return f"{self.name} - {self.price} € - {self.dish_url} - {self.image_url} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts."
 
     def print(self):
         print(self.__str__())

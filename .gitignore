@@ -1,3 +1,5 @@
 __pycache__
 .env
 .~lock.nutriscore.xlsx#
+geckodriver.log
+settings.json

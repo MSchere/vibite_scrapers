@@ -28,6 +28,7 @@ def save_menu(dish_list):
             "name": dish.name,
             "description": dish.description,
             "price": dish.price,
+            "dishUrl": dish.dish_url,
             "imageUrl": dish.image_url,
             "nutrients": nutrients_dict,
             "ingredients": dish.ingredients,
