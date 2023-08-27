@@ -44,18 +44,18 @@ def get_dishes(div_id) -> list:
         try:
             nutrients_dict = {}
             food_name = utils.find(
-                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a/div[2]/div[1]")
+                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a/div[2]/div[1]").lower()
             utils.open_link_in_new_tab(
                 "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a")
             food_url = drv.current_url
             food_price = float(utils.get_text(
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[2]/div[2]/div[1]")[:-1].replace(",", "."))
             food_description = utils.get_text(
-                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[2]/div[1]/div[2]/div[2]/h2")
+                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[2]/div[1]/div[2]/div[2]/h2").lower()
             food_ingredients = utils.get_text(
-                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[1]/p")
+                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[1]/p").lower()
             food_allergens = utils.get_text(
-                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[1]/p/span")
+                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[1]/p/span").lower()
             food_ingredients = food_ingredients.replace(food_allergens, "")
             food_image = utils.get_image(
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[1]/img")
