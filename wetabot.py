@@ -25,14 +25,14 @@ wetaca_url = "https://wetaca.com"
 wetaca_menu_url = "https://wetaca.com/carta"
 
 nutrient_lookup = {
-    "Energía": Nutrients.ENERGY,
-    "Grasas totales": Nutrients.FAT,
-    "Grasas saturadas": Nutrients.SATFAT,
-    "Proteínas": Nutrients.PROTEIN,
-    "Carbohidratos": Nutrients.CARBS,
-    "Azúcares": Nutrients.SUGAR,
-    "Fibra Dietética": Nutrients.FIBER,
-    "Sal": Nutrients.SALT,
+    "Energía": Nutrients.energy,
+    "Grasas totales": Nutrients.fat,
+    "Grasas saturadas": Nutrients.satFat,
+    "Proteínas": Nutrients.protein,
+    "Carbohidratos": Nutrients.carbs,
+    "Azúcares": Nutrients.sugar,
+    "Fibra Dietética": Nutrients.fiber,
+    "Sal": Nutrients.salt,
 }
 
 

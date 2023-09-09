@@ -2,14 +2,14 @@ from enum import Enum
 
 
 class Nutrients(Enum):
-    ENERGY = "energy"
-    FAT = "fat"
-    SATFAT = "satFat"
-    PROTEIN = "protein"
-    CARBS = "carbs"
-    SUGAR = "sugar"
-    FIBER = "fiber"
-    SALT = "salt"
+    energy = "energy"
+    fat = "fat"
+    satFat = "satFat"
+    protein = "protein"
+    carbs = "carbs"
+    sugar = "sugar"
+    fiber = "fiber"
+    salt = "salt"
 
 
 class NutrientInfo:
@@ -38,8 +38,8 @@ class Dish:
 
     # points, energy (kj), sugar (g), satFat(g), sodium (g)
     bad_nutrients_table = [
-        ["points", Nutrients.ENERGY, Nutrients.SUGAR,
-            Nutrients.SATFAT, Nutrients.SALT],
+        ["points", Nutrients.energy, Nutrients.sugar,
+            Nutrients.satFat, Nutrients.salt],
         [1, 335, 4.5, 1, 0.09],
         [2, 670, 9, 2, 0.18],
         [3, 1005, 13.5, 3, 0.27],
@@ -53,7 +53,7 @@ class Dish:
     ]
     # points, fiber (g), protein (g)
     good_nutrients_table = [
-        ["points", Nutrients.FIBER, Nutrients.PROTEIN],
+        ["points", Nutrients.fiber, Nutrients.protein],
         [1, 0.7, 1.6],
         [2, 1.4, 3.2],
         [3, 2.1, 4.8],
@@ -88,7 +88,7 @@ class Dish:
     def calculate_nutriscore(self) -> int:
         points = 0
         for nutrient_name in self.nutrients:
-            if nutrient_name == Nutrients.ENERGY:
+            if nutrient_name == Nutrients.energy:
                 for i in range(1, len(self.bad_nutrients_table)):
                     energy = self.nutrients[nutrient_name].value_100
                     if self.nutrients[nutrient_name].unit == "kcl":
@@ -96,13 +96,13 @@ class Dish:
                     if energy < self.bad_nutrients_table[i][1]:
                         points += self.bad_nutrients_table[i][0]
                         break
-            if nutrient_name == Nutrients.SUGAR or nutrient_name == Nutrients.SATFAT or nutrient_name == Nutrients.SALT:
+            if nutrient_name == Nutrients.sugar or nutrient_name == Nutrients.satFat or nutrient_name == Nutrients.salt:
                 for i in range(1, len(self.bad_nutrients_table)):
 
                     if self.nutrients[nutrient_name].value_100 > self.bad_nutrients_table[i][self.bad_nutrients_table[0].index(nutrient_name)]:
                         points += self.bad_nutrients_table[i][0]
                         break
-            elif nutrient_name == Nutrients.FIBER or nutrient_name == Nutrients.PROTEIN:
+            elif nutrient_name == Nutrients.fiber or nutrient_name == Nutrients.protein:
                 for i in range(1, len(self.good_nutrients_table)):
                     if self.nutrients[nutrient_name].value_100 > self.good_nutrients_table[i][self.good_nutrients_table[0].index(nutrient_name)]:
                         points -= self.good_nutrients_table[i][0]
