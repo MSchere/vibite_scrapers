@@ -43,11 +43,12 @@ def get_dishes(div_id) -> list:
     while True:
         try:
             nutrients_dict = {}
-            food_name = utils.find(
-                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a/div[2]/div[1]").lower()
+            utils.find( # Throws exception if element is not found
+                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]") 
             utils.open_link_in_new_tab(
                 "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a")
             food_url = drv.current_url
+            food_name = food_url.split("/")[-1].replace("-", " ")
             food_price = float(utils.get_text(
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[2]/div[2]/div[1]")[:-1].replace(",", "."))
             food_description = utils.get_text(
@@ -102,7 +103,8 @@ utils.click("//*[@id='__next']/div/div/div/div[2]/div[3]/div[2]/button")
 drv.get(wetaca_menu_url)
 # Get menu date
 utils.get_text("//*[@id='__next']/div/div/div/div[2]/div/div/div[2]/p")
-utils.get_text("//*[@id='comidas']/div/div[1]/div/a/div[2]/div[1]") # Wait for first dish to load
+# Wait for first dish to load
+utils.get_text("//*[@id='comidas']/div/div[1]/div/a/div[2]/div[1]")
 
 # Get dishes
 dish_list = []

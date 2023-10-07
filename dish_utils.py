@@ -118,7 +118,7 @@ class Dish:
                 break
 
     def __str__(self):
-        return f"{self.name} - {self.price} € - {self.dish_url} - {self.image_url} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts."
+        return f"{self.name} - {self.price} € - {self.dish_url} - {self.image_url} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts. - {self.is_available}"
 
     def print(self):
         print(self.__str__())
