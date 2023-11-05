@@ -43,8 +43,10 @@ def get_dishes(div_id) -> list:
     while True:
         try:
             nutrients_dict = {}
-            utils.find( # Throws exception if element is not found
-                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]") 
+            next_dish = utils.is_element_present(
+                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]")
+            if not next_dish:
+                break
             utils.open_link_in_new_tab(
                 "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a")
             food_url = drv.current_url
@@ -60,6 +62,8 @@ def get_dishes(div_id) -> list:
             food_ingredients = food_ingredients.replace(food_allergens, "")
             food_image = utils.get_image(
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[1]/img")
+            is_vegan = utils.is_class_present("icon-Vegan")
+            is_lactose_free = utils.is_class_present("icon-Lactose")
             for i in range(2, 10):  # Get nutritional info from the nutrients table
                 nutrient_name = nutrient_lookup.get(utils.get_text(
                     "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr["+str(i)+"]/td[1]"), "")
@@ -79,18 +83,18 @@ def get_dishes(div_id) -> list:
             time_now = int(time.time())
 
             current_food = Dish(food_name, food_description, food_price, food_url, food_image,
-                                nutrients_dict, food_ingredients, food_allergens, False, False, False, time_now)
+                                nutrients_dict, food_ingredients, food_allergens, is_vegan, False, is_lactose_free, time_now)
             current_food.calculate_nutriscore()
             current_food.print()
             section_dish_list.append(current_food)
             cnt += 1
         except (Exception, ValueError) as error:
-            if (str(error).startswith("Unable to locate element")):
-                print("No more dishes in this section")
-            else:
-                print("Error:", error)
-                break
-            return section_dish_list  # Return the list of dishes in the section
+            print("Error:", error)
+            drv.close()  # Return to previous page
+            drv.switch_to.window(drv.window_handles[0])
+            continue
+    print("No more dishes in this section")
+    return section_dish_list  # Return the list of dishes in the section
 
 
 # BEGIN SCRIPT

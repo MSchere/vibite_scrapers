@@ -44,6 +44,25 @@ class Utils:
     def setup_action_chains(self, drv):
         self.act = ActionChains(drv)
         return ActionChains(drv)
+    
+    def is_element_present(self, xpath):
+        if self.debug:
+            print("Checking if element is present " + xpath)
+        try:
+            self.drv.find_element(By.XPATH, xpath)
+        except:
+            return False
+        return True
+    
+    def is_class_present(self, class_name):
+        if self.debug:
+            print("Checking if class is present " + class_name)
+        try:
+            self.drv.find_element(By.CLASS_NAME, class_name)
+        except:
+            return False
+        return True
+    
 
     def find(self, xpath):
         if self.debug:
