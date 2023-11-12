@@ -1,20 +1,24 @@
 import time
 
 import bot_utils
-from dish_utils import Dish, NutrientInfo, Nutrients
+from dish_utils import Dish, Nutrient, NutrientInfo, Platform
 from firebase_utils import save_menu
 
-''' 
- __          __  _        _           _   
- \ \        / / | |      | |         | |  
-  \ \  /\  / /__| |_ __ _| |__   ___ | |_ 
-   \ \/  \/ / _ \ __/ _` | '_ \ / _ \| __|
+bot_title = '''
+
+ __          __  _        ____        _   
+ \ \        / / | |      |  _ \      | |  
+  \ \  /\  / /__| |_ __ _| |_) | ___ | |_ 
+   \ \/  \/ / _ \ __/ _` |  _ < / _ \| __|
     \  /\  /  __/ || (_| | |_) | (_) | |_ 
-     \/  \/ \___|\__\__,_|_.__/ \___/ \__|
+     \/  \/ \___|\__\__,_|____/ \___/ \__|
                                           
-    This script scrapes the menu from Wetaca's website and saves it to Firestore
-    Maintenance is required when the website changes or new popups are added.
+                                          
 '''
+
+# This script scrapes the menu from Wetaca's website and saves it to Firestore
+# Maintenance is required when the website changes or new popups are added.
+
 
 HEADLESS = True
 DEBUG = False
@@ -25,14 +29,14 @@ wetaca_url = "https://wetaca.com"
 wetaca_menu_url = "https://wetaca.com/carta"
 
 nutrient_lookup = {
-    "Energía": Nutrients.energy,
-    "Grasas totales": Nutrients.fat,
-    "Grasas saturadas": Nutrients.satFat,
-    "Proteínas": Nutrients.protein,
-    "Carbohidratos": Nutrients.carbs,
-    "Azúcares": Nutrients.sugar,
-    "Fibra Dietética": Nutrients.fiber,
-    "Sal": Nutrients.salt,
+    "Energía": Nutrient.energy,
+    "Grasas totales": Nutrient.fat,
+    "Grasas saturadas": Nutrient.satFat,
+    "Proteínas": Nutrient.protein,
+    "Carbohidratos": Nutrient.carbs,
+    "Azúcares": Nutrient.sugar,
+    "Fibra Dietética": Nutrient.fiber,
+    "Sal": Nutrient.salt,
 }
 
 
@@ -64,6 +68,8 @@ def get_dishes(div_id) -> list:
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[1]/div[1]/img")
             is_vegan = utils.is_class_present("icon-Vegan")
             is_lactose_free = utils.is_class_present("icon-Lactose")
+            food_weight = float(utils.get_text(
+                "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr[1]/td[3]").replace(",", ".").split(" ")[1])
             for i in range(2, 10):  # Get nutritional info from the nutrients table
                 nutrient_name = nutrient_lookup.get(utils.get_text(
                     "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr["+str(i)+"]/td[1]"), "")
@@ -82,7 +88,7 @@ def get_dishes(div_id) -> list:
 
             time_now = int(time.time())
 
-            current_food = Dish(food_name, food_description, food_price, food_url, food_image,
+            current_food = Dish(Platform.WETACA.value, food_name, food_description, food_price, food_url, food_image, food_weight,
                                 nutrients_dict, food_ingredients, food_allergens, is_vegan, False, is_lactose_free, time_now)
             current_food.calculate_nutriscore()
             current_food.print()
@@ -98,7 +104,7 @@ def get_dishes(div_id) -> list:
 
 
 # BEGIN SCRIPT
-print("---------------------------WETABOT---------------------------")
+print(bot_title)
 # Initialize webdriver
 drv = utils.setup_driver("firefox", headless=HEADLESS)
 drv.get(wetaca_url)  # navigate to the application home page to load cookies
@@ -119,4 +125,4 @@ dish_list.extend(get_dishes("postres"))
 
 drv.quit()  # Close webdriver
 save_menu(dish_list)  # Save menu to Firestore
-print("--------------------------------------------------------------")
+print("------------------------WETABOT END---------------------------")

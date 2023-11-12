@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Nutrients(Enum):
+class Nutrient(Enum):
     energy = "energy"
     fat = "fat"
     satFat = "satFat"
@@ -18,13 +18,24 @@ class NutrientInfo:
         self.value_total = value_total
         self.unit = unit
 
+class Platform(Enum):
+    WETACA = "Wetaca"
+    TAPPERS = "Tappers"
+    PROZIS = "Prozis"
+    NOCOCINOMAS = "Nococinomas"
+    MENUDIET = "Menudiet"
+    GUISOS = "Guisos"
+    KNOWEATS = "Knoweats"
+    MIPLATO = "MiPlato"
 
 class Dish:
+    platform = ""
     name = ""
     description = ""
     price = 0
     dish_url = ""
     image_url = ""
+    weight = 0
     nutrients = {}
     ingredients = ""
     allergens = ""
@@ -38,8 +49,8 @@ class Dish:
 
     # points, energy (kj), sugar (g), satFat(g), sodium (g)
     bad_nutrients_table = [
-        ["points", Nutrients.energy, Nutrients.sugar,
-            Nutrients.satFat, Nutrients.salt],
+        ["points", Nutrient.energy, Nutrient.sugar,
+            Nutrient.satFat, Nutrient.salt],
         [1, 335, 4.5, 1, 0.09],
         [2, 670, 9, 2, 0.18],
         [3, 1005, 13.5, 3, 0.27],
@@ -53,7 +64,7 @@ class Dish:
     ]
     # points, fiber (g), protein (g)
     good_nutrients_table = [
-        ["points", Nutrients.fiber, Nutrients.protein],
+        ["points", Nutrient.fiber, Nutrient.protein],
         [1, 0.7, 1.6],
         [2, 1.4, 3.2],
         [3, 2.1, 4.8],
@@ -70,13 +81,15 @@ class Dish:
         [19, 40, "E"]
     ]
 
-    def __init__(self, name, description, price, dish_url, image_url, nutrients,
+    def __init__(self, platform, name, description, price, dish_url, image_url, weight, nutrients,
                  ingredients, allergens, is_vegan, is_gluten_free, is_lactose_free, updated_at):
+        self.platform = platform
         self.name = name
         self.description = description
         self.price = price
         self.dish_url = dish_url
         self.image_url = image_url
+        self.weight = weight
         self.nutrients = nutrients
         self.ingredients = ingredients
         self.allergens = allergens
@@ -88,7 +101,7 @@ class Dish:
     def calculate_nutriscore(self) -> int:
         points = 0
         for nutrient_name in self.nutrients:
-            if nutrient_name == Nutrients.energy:
+            if nutrient_name == Nutrient.energy:
                 for i in range(1, len(self.bad_nutrients_table)):
                     energy = self.nutrients[nutrient_name].value_100
                     if self.nutrients[nutrient_name].unit == "kcl":
@@ -96,13 +109,13 @@ class Dish:
                     if energy < self.bad_nutrients_table[i][1]:
                         points += self.bad_nutrients_table[i][0]
                         break
-            if nutrient_name == Nutrients.sugar or nutrient_name == Nutrients.satFat or nutrient_name == Nutrients.salt:
+            if nutrient_name == Nutrient.sugar or nutrient_name == Nutrient.satFat or nutrient_name == Nutrient.salt:
                 for i in range(1, len(self.bad_nutrients_table)):
 
                     if self.nutrients[nutrient_name].value_100 > self.bad_nutrients_table[i][self.bad_nutrients_table[0].index(nutrient_name)]:
                         points += self.bad_nutrients_table[i][0]
                         break
-            elif nutrient_name == Nutrients.fiber or nutrient_name == Nutrients.protein:
+            elif nutrient_name == Nutrient.fiber or nutrient_name == Nutrient.protein:
                 for i in range(1, len(self.good_nutrients_table)):
                     if self.nutrients[nutrient_name].value_100 > self.good_nutrients_table[i][self.good_nutrients_table[0].index(nutrient_name)]:
                         points -= self.good_nutrients_table[i][0]
@@ -118,7 +131,7 @@ class Dish:
                 break
 
     def __str__(self):
-        return f"{self.name} - {self.price} € - {self.dish_url} - {self.image_url} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts. - {self.is_available}"
+        return f"{self.platform} - {self.name} - {self.price} € - {self.weight} - {self.ingredients} - {self.allergens} - {self.is_vegan} - {self.is_gluten_free} - {self.is_lactose_free} - {self.updated_at} - {self.nutri_score} - {self.score} pts."
 
     def print(self):
         print(self.__str__())

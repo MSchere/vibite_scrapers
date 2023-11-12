@@ -1,3 +1,5 @@
+import urllib.request
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.action_chains import ActionChains
@@ -44,7 +46,7 @@ class Utils:
     def setup_action_chains(self, drv):
         self.act = ActionChains(drv)
         return ActionChains(drv)
-    
+
     def is_element_present(self, xpath):
         if self.debug:
             print("Checking if element is present " + xpath)
@@ -53,7 +55,7 @@ class Utils:
         except:
             return False
         return True
-    
+
     def is_class_present(self, class_name):
         if self.debug:
             print("Checking if class is present " + class_name)
@@ -62,7 +64,6 @@ class Utils:
         except:
             return False
         return True
-    
 
     def find(self, xpath):
         if self.debug:
@@ -111,6 +112,17 @@ class Utils:
             except:
                 continue
 
+    def get_text_from_xpaths(self, xpath_list):
+        if self.debug:
+            print("Getting text from one of " + str(xpath_list))
+        for xpath in xpath_list:
+            try:
+                text = self.drv.find_element(By.XPATH, xpath).text
+                if text != "":
+                    return text
+            except:
+                continue
+
     def get_image(self, xpath):
         if self.debug:
             print("Getting image from " + xpath)
@@ -120,13 +132,39 @@ class Utils:
             except:
                 continue
 
-    def open_link_in_new_tab(self, xpath):
+    def download_image(self, xpath):
         if self.debug:
-            print("Opening link in new tab " + xpath)
+            print("Downloading image from " + xpath)
+        while True:
+            path = "downloads/images/"
+            try:
+                image = self.drv.find_element(
+                    By.XPATH, xpath).get_attribute("src")
+                if image != "":
+                    urllib.request.urlretrieve(image, path)
+            except:
+                continue
+            break
+
+    def get_image_from_xpaths(self, xpath_list):
+        if self.debug:
+            print("Getting image from one of " + str(xpath_list))
+        for xpath in xpath_list:
+            try:
+                image = self.drv.find_element(
+                    By.XPATH, xpath).get_attribute("src")
+                if image != "":
+                    return image
+            except:
+                continue
+
+    def open_link_in_new_tab(self, xpath):
         while True:
             try:
                 link = (self.drv.find_element(
                     By.XPATH, xpath).get_attribute("href"))
+                if self.debug:
+                    print("Opening link in new tab " + link)
             except:
                 continue
             break
