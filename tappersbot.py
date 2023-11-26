@@ -144,10 +144,10 @@ utils.get_text("//*[@id='content']/div/section[4]")
 
 # Get dishes
 dish_list = []
-# dish_list.extend(get_dishes("4"))
-# dish_list.extend(get_dishes("6"))
+dish_list.extend(get_dishes("4"))
+dish_list.extend(get_dishes("6"))
 dish_list.extend(get_dishes("8"))
-# dish_list.extend(get_dishes("9"))
+dish_list.extend(get_dishes("9"))
 
 drv.quit()  # Close webdriver
 save_menu(dish_list)  # Save menu to Firestore
