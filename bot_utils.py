@@ -1,5 +1,7 @@
 import urllib.request
-
+from pyvirtualdisplay import Display
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.action_chains import ActionChains
@@ -12,30 +14,46 @@ from selenium.webdriver.safari.options import Options as SafariOptions
 class Utils:
     debug = False
 
-    def __init__(self, debug):
+    def __init__(self, browser, server, headless, debug):
+        self.browser = browser
+        self.server = server
+        self.headless = headless
         self.debug = debug
 
-    def setup_driver(self, browser, headless):
+    def setup_driver(self):
         chrome_options = ChromeOptions()
         firefox_options = FirefoxOptions()
         edge_options = EdgeOptions()
         safari_options = SafariOptions()
-        if headless:
-            if browser == "opera" or browser == "phantomjs":
+        if self.headless:
+            if self.browser == "opera" or self.browser == "phantomjs":
                 print("Browser not supported in headless mode")
                 exit(1)
+            chrome_options.add_argument("--window-size=1920,1080")
             chrome_options.add_argument("--headless")
+            firefox_options.add_argument("--width=1920")
+            firefox_options.add_argument("--height=1080")
             firefox_options.add_argument("--headless")
             edge_options.add_argument("--headless")
             safari_options.add_argument("--headless")
+            display = Display(visible=0, size=(1920, 1080))
+            display.start() 
 
-        if browser == "chrome":
-            drv = webdriver.Chrome(options=chrome_options)
-        elif browser == "firefox":
-            drv = webdriver.Firefox(options=firefox_options)
-        elif browser == "edge":
+        if self.browser == "chrome":
+            if self.server:
+                service = ChromeService("/usr/lib/chromium-browser/chromedriver")
+                drv = webdriver.Chrome(service=service, options=chrome_options)
+            else:
+                drv = webdriver.Chrome(options=chrome_options)
+        elif self.browser == "firefox":
+            if self.server:
+                service = FirefoxService("/usr/local/bin/geckodriver")
+                drv = webdriver.Firefox(service=service, options=firefox_options)
+            else:
+                drv = webdriver.Firefox(options=firefox_options)
+        elif self.browser == "edge":
             drv = webdriver.Edge(options=edge_options)
-        elif browser == "safari":
+        elif self.browser == "safari":
             drv = webdriver.Safari(options=safari_options)
         else:
             print("Browser not supported")

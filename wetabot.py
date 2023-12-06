@@ -1,5 +1,5 @@
 import time
-
+import sys
 import bot_utils
 from dish_utils import Dish, Nutrient, NutrientInfo, Platform
 from firebase_utils import save_menu
@@ -18,12 +18,17 @@ bot_title = '''
 
 # This script scrapes the menu from Wetaca's website and saves it to Firestore
 # Maintenance is required when the website changes or new popups are added.
-
-
+if len(sys.argv) < 1:
+    print("Usage: python prozisbot.py <browser> [server]")
+    sys.exit(1)
+BROWSER = sys.argv[1]
+SERVER = False
+if len(sys.argv) > 2:
+    SERVER = sys.argv[2] == "server"
 HEADLESS = True
 DEBUG = False
 
-utils = bot_utils.Utils(debug=DEBUG)
+utils = bot_utils.Utils(browser=BROWSER,server=SERVER,  headless=HEADLESS, debug=DEBUG)
 # CONFIGURATION
 wetaca_url = "https://wetaca.com"
 wetaca_menu_url = "https://wetaca.com/carta"
@@ -47,12 +52,10 @@ def get_dishes(div_id) -> list:
     while True:
         try:
             nutrients_dict = {}
-            next_dish = utils.is_element_present(
-                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]")
+            next_dish = utils.is_element_present(f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]")
             if not next_dish:
                 break
-            utils.open_link_in_new_tab(
-                "//*[@id=\""+div_id+"\"]/div/div["+str(cnt)+"]/div/a")
+            utils.open_link_in_new_tab(f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]/div/a")
             food_url = drv.current_url
             food_name = food_url.split("/")[-1].replace("-", " ")
             food_price = float(utils.get_text(
@@ -72,14 +75,12 @@ def get_dishes(div_id) -> list:
                 "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr[1]/td[3]").replace(",", ".").split(" ")[1])
             for i in range(2, 10):  # Get nutritional info from the nutrients table
                 nutrient_name = nutrient_lookup.get(utils.get_text(
-                    "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr["+str(i)+"]/td[1]"), "")
+                    f"//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr[{str(i)}]/td[1]"), "")
                 nutrient_str_100 = utils.get_text(
-                    "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr["+str(i)+"]/td[2]").replace(",", ".")
-                nutrient_str_total = utils.get_text(
-                    "//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr["+str(i)+"]/td[3]").replace(",", ".")
+                    f"//*[@id='__next']/div/div/div/div[2]/div[3]/div/div[2]/div[2]/table/tbody/tr[{str(i)}]/td[2]").replace(",", ".")
 
                 nutrient_value_100 = float(nutrient_str_100.split(" ")[0])
-                nutrient_value_total = float(nutrient_str_total.split(" ")[0])
+                nutrient_value_total = nutrient_value_100 * food_weight / 100
                 nutrient_unit = nutrient_str_100.split(" ")[1]
                 nutrients_dict[nutrient_name] = NutrientInfo(
                     nutrient_value_100, nutrient_value_total, nutrient_unit)
@@ -106,13 +107,11 @@ def get_dishes(div_id) -> list:
 # BEGIN SCRIPT
 print(bot_title)
 # Initialize webdriver
-drv = utils.setup_driver("firefox", headless=HEADLESS)
+drv = utils.setup_driver()
 drv.get(wetaca_url)  # navigate to the application home page to load cookies
 # Click accept cookies
 utils.click("//*[@id='__next']/div/div/div/div[2]/div[3]/div[2]/button")
 drv.get(wetaca_menu_url)
-# Get menu date
-utils.get_text("//*[@id='__next']/div/div/div/div[2]/div/div/div[2]/p")
 # Wait for first dish to load
 utils.get_text("//*[@id='comidas']/div/div[1]/div/a/div[2]/div[1]")
 

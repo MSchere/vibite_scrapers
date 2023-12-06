@@ -1,6 +1,6 @@
 import re
 import time
-
+import sys
 import bot_utils
 from dish_utils import Dish, Nutrient, NutrientInfo, Platform
 from firebase_utils import save_menu
@@ -19,15 +19,21 @@ bot_title = '''
 '''
 # This script scrapes the menu from Tappers' website and saves it to Firestore
 # Maintenance is required when the website changes or new popups are added.
-
+if len(sys.argv) < 1:
+    print("Usage: python prozisbot.py <browser> [server]")
+    sys.exit(1)
+BROWSER = sys.argv[1]
+SERVER = False
+if len(sys.argv) > 2:
+    SERVER = sys.argv[2] == "server"
 HEADLESS = True
 DEBUG = False
 
-utils = bot_utils.Utils(debug=DEBUG)
+utils = bot_utils.Utils(browser=BROWSER,server=SERVER,  headless=HEADLESS, debug=DEBUG)
 # CONFIGURATION
 tappers_url = "https://www.tappers.es/a-domicilio/todos/"
 
-nutrient_regex = r"([A-Za-z áéíóú]+): ?(\d+\.?,?\d?+) ?([a-zA-Z]+)?"
+nutrient_regex = r"([A-Za-z áéíóú]+): ?(\d+\.?,?\d?) ?([a-zA-Z]+)?"
 name_regex = r"([A-Za-z -ñáéíóúÁÉÍÓÚ]+) \((\d+) ?([a-zA-Z]+)\.\)"
 
 nutrient_lookup = {
@@ -55,12 +61,11 @@ def get_dishes(section_id) -> list:
         try:
             nutrients_dict = {}
             next_dish = utils.is_element_present(
-                "//*[@id='content']/div/section["+section_id+"]/div/div/div/div[4]/div/div/ul/li["+str(cnt)+"]")
+                f"//*[@id='content']/div/section[{section_id}]/div/div/div/div[4]/div/div/ul/li[{str(cnt)}]")
             if not next_dish:
                 break
             utils.open_link_in_new_tab(
-                "//*[@id='content']/div/section["+section_id +
-                "]/div/div/div/div[4]/div/div/ul/li["+str(cnt)+"]/a[1]"
+                f"//*[@id='content']/div/section[{section_id}]/div/div/div/div[4]/div/div/ul/li[{str(cnt)}]/a[1]"
             )
             food_url = drv.current_url
             name_str = utils.get_text(
@@ -136,10 +141,10 @@ def get_dishes(section_id) -> list:
 # BEGIN SCRIPT
 print(bot_title)
 # Initialize webdriver
-drv = utils.setup_driver("firefox", headless=HEADLESS)
+drv = utils.setup_driver()
 # Go to website
 drv.get(tappers_url)
-# Wait for section to
+# Wait for section to load
 utils.get_text("//*[@id='content']/div/section[4]")
 
 # Get dishes
