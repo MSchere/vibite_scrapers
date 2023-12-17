@@ -29,7 +29,8 @@ if len(sys.argv) > 2:
 HEADLESS = True
 DEBUG = False
 
-utils = bot_utils.Utils(browser=BROWSER,server=SERVER,  headless=HEADLESS, debug=DEBUG)
+utils = bot_utils.Utils(browser=BROWSER, server=SERVER,
+                        headless=HEADLESS, debug=DEBUG)
 # CONFIGURATION
 tappers_url = "https://www.tappers.es/a-domicilio/todos/"
 
@@ -39,7 +40,9 @@ name_regex = r"([A-Za-z -ñáéíóúÁÉÍÓÚ]+) \((\d+) ?([a-zA-Z]+)\.\)"
 nutrient_lookup = {
     "energía": Nutrient.energy,
     "grasas": Nutrient.fat,
+    "grasa": Nutrient.fat,
     "de las cuales ags": Nutrient.satFat,
+    "las cuales saturadas": Nutrient.satFat,
     "de las cuales saturadas": Nutrient.satFat,
     "proteínas": Nutrient.protein,
     "hidratos de carbono": Nutrient.carbs,

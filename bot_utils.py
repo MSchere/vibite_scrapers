@@ -1,5 +1,4 @@
 import urllib.request
-from pyvirtualdisplay import Display
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium import webdriver
@@ -36,19 +35,19 @@ class Utils:
             firefox_options.add_argument("--headless")
             edge_options.add_argument("--headless")
             safari_options.add_argument("--headless")
-            display = Display(visible=0, size=(1920, 1080))
-            display.start() 
 
         if self.browser == "chrome":
             if self.server:
-                service = ChromeService("/usr/lib/chromium-browser/chromedriver")
+                service = ChromeService(
+                    "/usr/lib/chromium-browser/chromedriver")
                 drv = webdriver.Chrome(service=service, options=chrome_options)
             else:
                 drv = webdriver.Chrome(options=chrome_options)
         elif self.browser == "firefox":
             if self.server:
                 service = FirefoxService("/usr/local/bin/geckodriver")
-                drv = webdriver.Firefox(service=service, options=firefox_options)
+                drv = webdriver.Firefox(
+                    service=service, options=firefox_options)
             else:
                 drv = webdriver.Firefox(options=firefox_options)
         elif self.browser == "edge":
