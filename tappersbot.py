@@ -47,6 +47,7 @@ nutrient_lookup = {
     "proteínas": Nutrient.protein,
     "hidratos de carbono": Nutrient.carbs,
     "hidratos de c": Nutrient.carbs,
+    "azúcar": Nutrient.sugar,
     "de los cuales azúcar": Nutrient.sugar,
     "de los cuales azúcares": Nutrient.sugar,
     "los cuales azúcar": Nutrient.sugar,
@@ -136,6 +137,7 @@ def get_dishes(section_id) -> list:
             print("Error:", error)
             drv.close()  # Return to previous page
             drv.switch_to.window(drv.window_handles[0])
+            cnt += 1
             continue
     print("No more dishes in this section")
     return section_dish_list  # Return the list of dishes in the section

@@ -28,7 +28,8 @@ if len(sys.argv) > 2:
 HEADLESS = True
 DEBUG = False
 
-utils = bot_utils.Utils(browser=BROWSER,server=SERVER,  headless=HEADLESS, debug=DEBUG)
+utils = bot_utils.Utils(browser=BROWSER, server=SERVER,
+                        headless=HEADLESS, debug=DEBUG)
 # CONFIGURATION
 wetaca_url = "https://wetaca.com"
 wetaca_menu_url = "https://wetaca.com/carta"
@@ -52,10 +53,12 @@ def get_dishes(div_id) -> list:
     while True:
         try:
             nutrients_dict = {}
-            next_dish = utils.is_element_present(f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]")
+            next_dish = utils.is_element_present(
+                f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]")
             if not next_dish:
                 break
-            utils.open_link_in_new_tab(f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]/div/a")
+            utils.open_link_in_new_tab(
+                f"//*[@id=\"{div_id}\"]/div/div[{str(cnt)}]/div/a")
             food_url = drv.current_url
             food_name = food_url.split("/")[-1].replace("-", " ")
             food_price = float(utils.get_text(
@@ -99,6 +102,7 @@ def get_dishes(div_id) -> list:
             print("Error:", error)
             drv.close()  # Return to previous page
             drv.switch_to.window(drv.window_handles[0])
+            cnt += 1
             continue
     print("No more dishes in this section")
     return section_dish_list  # Return the list of dishes in the section

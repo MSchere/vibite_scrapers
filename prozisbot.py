@@ -28,7 +28,8 @@ if len(sys.argv) > 2:
 HEADLESS = False
 DEBUG = False
 
-utils = bot_utils.Utils(browser=BROWSER,server=SERVER,  headless=HEADLESS, debug=DEBUG)
+utils = bot_utils.Utils(browser=BROWSER, server=SERVER,
+                        headless=HEADLESS, debug=DEBUG)
 prozis_url = "https://www.prozis.com/es/es"
 
 nutrient_lookup = {
@@ -44,6 +45,7 @@ nutrient_lookup = {
 
 nutrient_regex = r"([A-Za-z áéíóú]+): ?(\d+\.?,?\d?) ?([a-zA-Z]+)?"
 
+
 def get_dishes() -> list:
     cnt = 1
     drv = utils.drv
@@ -51,14 +53,16 @@ def get_dishes() -> list:
     while True:
         try:
             nutrients_dict = {}
-            next_dish = utils.is_element_present(f"//*[@id='listSectionWrapper']/div[1]/div[{str(cnt)}]")
+            next_dish = utils.is_element_present(
+                f"//*[@id='listSectionWrapper']/div[1]/div[{str(cnt)}]")
             if not next_dish:
                 break
-            utils.open_link_in_new_tab(f"//*[@id='listSectionWrapper']/div[1]/div[{str(cnt)}]/a")
+            utils.open_link_in_new_tab(
+                f"//*[@id='listSectionWrapper']/div[1]/div[{str(cnt)}]/a")
             food_url = drv.current_url
             food_name = food_url.split("/")[-1].replace("-", " ")
 
-            if (food_name.find("cubiertos") != -1) or  food_name.find("meal kit") != -1:
+            if (food_name.find("cubiertos") != -1) or food_name.find("meal kit") != -1:
                 drv.close()  # Return to previous page
                 drv.switch_to.window(drv.window_handles[0])
                 cnt += 1
@@ -66,13 +70,15 @@ def get_dishes() -> list:
 
             food_price = float(utils.get_text(
                 "//*[@id='ob-product-price']")[1:])
-            food_image = utils.get_image("//*[@id='pdp-gallery']/div/div[2]/div/div[2]/div/div/div/picture/img")
+            food_image = utils.get_image(
+                "//*[@id='pdp-gallery']/div/div[2]/div/div[2]/div/div/div/picture/img")
             food_description = utils.get_text_from_xpaths([
                 "/html/body/div[6]/prz-pdpdesktop/div/article/div[3]/div/section[2]/div/div[2]/div/div/div/div/table/tr/td/div/div[2]/p",
                 "/html/body/div[6]/prz-pdpdesktop/div/article/div[3]/div/section[2]/div/div[2]/div/div/div/div/table/tr/td/div/div[3]/p"])
             # Go to nutritional info tab
             utils.click("//*[@id='tab_NUTRITION_TABLE']")
-            food_weight_str = utils.get_text("//*[@id='pdpTabsList']/div/div/div/div[1]/div[1]/div/p")
+            food_weight_str = utils.get_text(
+                "//*[@id='pdpTabsList']/div/div/div/div[1]/div[1]/div/p")
             match = re.search(nutrient_regex, food_weight_str)
             food_weight = float(match[2])
             food_ingredients = utils.get_text_from_xpaths([
@@ -81,22 +87,26 @@ def get_dishes() -> list:
             food_allergens = utils.get_text_from_xpaths([
                 "//*[@id='pdpTabsList']/div/div/div/div[2]/div/div[2]/div",
                 "//*[@id='pdpTabsList']/div/div/div/div[2]/div/div[3]/div"]).lower()
-            
+
             is_vegan = food_name.find("vegano") != -1
             is_vegan = food_name.find("veganos") != -1
             is_gluten_free = False
             is_lactose_free = False
 
-            table_type = utils.get_text("//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[1]/button")
+            table_type = utils.get_text(
+                "//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[1]/button")
             for i in range(1, 9):
-                nutrient_name = nutrient_lookup.get(utils.get_text(f"//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[3]/div[{i}]/strong"))
-                nutrient_value_str = utils.get_text(f"//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[3]/div[{i}]/div[2]")                    
+                nutrient_name = nutrient_lookup.get(utils.get_text(
+                    f"//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[3]/div[{i}]/strong"))
+                nutrient_value_str = utils.get_text(
+                    f"//*[@id='pdpTabsList']/div/div/div/div[1]/div[2]/div[3]/div[{i}]/div[2]")
                 nutrient_unit = nutrient_value_str.split(" ")[1]
                 if (table_type == "Por Dosis"):
                     nutrient_value = float(nutrient_value_str.split(" ")[0])
                     nutrient_value_100 = nutrient_value / food_weight * 100
                 else:
-                    nutrient_value_100 = float(nutrient_value_str.split(" ")[0])
+                    nutrient_value_100 = float(
+                        nutrient_value_str.split(" ")[0])
                     nutrient_value = nutrient_value_100 * food_weight / 100
                 nutrients_dict[nutrient_name] = NutrientInfo(
                     nutrient_value_100, nutrient_value, nutrient_unit)
@@ -116,6 +126,7 @@ def get_dishes() -> list:
             print("Error:", error)
             drv.close()  # Return to previous page
             drv.switch_to.window(drv.window_handles[0])
+            cnt += 1
             continue
     print("No more dishes in this section")
     return section_dish_list  # Return the list of dishes in the section
@@ -134,7 +145,8 @@ utils.click("//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']")
 # Get dishes
 dish_list = []
 for i in range(1, 4):
-    drv.get(f"https://www.prozis.com/es/es/alimentacion-saludable/congelados/platos/q/page/{i}")
+    drv.get(
+        f"https://www.prozis.com/es/es/alimentacion-saludable/congelados/platos/q/page/{i}")
     # Wait for page to load
     utils.get_text("//*[@id='listSectionWrapper']/div[1]")
     dish_list.extend(get_dishes())
